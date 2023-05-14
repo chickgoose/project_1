@@ -30,6 +30,7 @@ class Board {
         int num_jobs, width, height; 
         ofstream& output; 
         char* board; 
+        int* board_page;
         vector<Page> vec;
         vector<Page> deleted_page;
 };
@@ -40,10 +41,12 @@ Board::Board(int num_jobs, int width, int height, ofstream& output_stream): outp
     this->num_jobs = num_jobs;
 
     board = new char[width*height];
+    board_page = new int[width*height];
 
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
             board[h*width + w] = ' ';
+            board_page[h*width + w] = 0;
         }
     }
 
@@ -102,12 +105,13 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
     for (int h = y; h < y + height; h++) {
         for (int w = x; w < x + width; w++) {
             for (int i=0; i<idx; i++) {
-                if (board[h * this->width + w] == vec[i].get_content()) {
+                if (board_page[h * this->width + w] == vec[i].get_id()) {
                     
                     on[i] = true;
                 }
             }
             board[h * this->width + w] = content;
+            board_page[h * this->width + w] = id;
         }
     }
     for (int i=0; i<idx; i++) {
@@ -120,7 +124,6 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
 }
 
 void Board::delete_page(int id) {
-    
     delete_page_recursive_part(id);
     deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
     for (int i=0; i <deleted_page.size(); i++) {
@@ -132,7 +135,7 @@ void Board::delete_page(int id) {
 }
 
 void Board::modify_content(int id, char content) {
-   delete_page_recursive_part(id);
+    delete_page_recursive_part(id);
     int change_idx = deleted_page.size()-1;
     Page new_page = Page(deleted_page[change_idx].get_x(), deleted_page[change_idx].get_y(), deleted_page[change_idx].get_width(), deleted_page[change_idx].get_height(), deleted_page[change_idx].get_id(), content);
     deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
@@ -203,7 +206,7 @@ void Board::delete_page_recursive_part(int id) {
         }
         delete_page_recursive_part(id_min);
     }
-
+    
     deleted_page.push_back(vec[tidx]);
     vec.erase(vec.begin() + tidx);
     for (int i=0; i<vec.size(); i++){
