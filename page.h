@@ -14,6 +14,7 @@ public:
     char get_content() ;
     vector<Page> get_vec_top();
     void add_vec_top(Page add);
+    void delete_vec_top(int idx);
 
 private:
     int x, y;
@@ -62,4 +63,8 @@ vector<Page> Page::get_vec_top() {
 
 void Page::add_vec_top(Page add) {
     vec_top.push_back(add);
+}
+
+void Page::delete_vec_top(int idx) {
+    vec_top.erase(vec_top.begin()+idx);
 }
