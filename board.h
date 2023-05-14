@@ -21,9 +21,9 @@ class Board {
         void delete_page(int id);
         void modify_content(int id, char content);
         void modify_position(int id, int x, int y);
+        
         void only_show_state(vector<Page> vec);
         int check_existing_vec (vector<Page> vec_top, int id);
-
         void delete_page_recursive_part(int id);
 
     private:
@@ -93,21 +93,19 @@ void Board::print_job(int job_idx, char job_type, int id) {
     output << id << endl;
 }
 
-
+ 
 void Board::insert_page(int x, int y, int width, int height, int id, int content) {
     Page new_page = Page(x, y, width, height, id, content);
     vec.push_back(new_page);
-    int idx = vec.size();
-    bool on[idx];
-    for (int i=0; i<idx; i++) {
+    bool on[vec.size()];
+    for (int i=0; i<vec.size(); i++) {
         on[i] = false;
     }
-    // 보드에 페이지 추가
+
     for (int h = y; h < y + height; h++) {
         for (int w = x; w < x + width; w++) {
-            for (int i=0; i<idx; i++) {
+            for (int i=0; i<vec.size(); i++) {
                 if (board_page[h * this->width + w] == vec[i].get_id()) {
-                    
                     on[i] = true;
                 }
             }
@@ -115,7 +113,7 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
             board_page[h * this->width + w] = id;
         }
     }
-    for (int i=0; i<idx; i++) {
+    for (int i=0; i<vec.size(); i++) {
         if (on[i] == true) {
             vec[i].add_vec_top(new_page);
         }
@@ -125,7 +123,6 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
 }
 
 void Board::delete_page(int id) {
-    
     delete_page_recursive_part(id);
     deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
     for (int i=0; i <deleted_page.size(); i++) {
@@ -133,7 +130,6 @@ void Board::delete_page(int id) {
         insert_page(deleted_page[idx].get_x(), deleted_page[idx].get_y(), deleted_page[idx].get_width(), deleted_page[idx].get_height(), deleted_page[idx].get_id(), deleted_page[idx].get_content());
     }
     deleted_page = {};
-
 }
 
 void Board::modify_content(int id, char content) {
@@ -210,14 +206,13 @@ void Board::delete_page_recursive_part(int id) {
         }
         delete_page_recursive_part(id_min);
     }
-    
+    //삭제 부분
     deleted_page.push_back(vec[tidx]);
     vec.erase(vec.begin() + tidx);
     for (int i=0; i<vec.size(); i++){
         if (check_existing_vec(vec[i].get_vec_top(), id) == 1) {
             for (int j=0; j<vec[i].get_vec_top().size(); j++) {
                 if (vec[i].get_vec_top()[j].get_id() == id) {
-
                     vec[i].delete_vec_top(j);
                 }
             }
