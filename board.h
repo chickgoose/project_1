@@ -144,7 +144,16 @@ void Board::modify_content(int id, char content) {
     deleted_page = {};
 }
 void Board::modify_position(int id, int x, int y) {
-    
+    delete_page_recursive_part(id);
+    int change_idx = deleted_page.size()-1;
+    Page new_page = Page(x, y, deleted_page[change_idx].get_width(), deleted_page[change_idx].get_height(), deleted_page[change_idx].get_id(), deleted_page[change_idx].get_content());
+    deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
+    deleted_page.push_back(new_page);
+    for (int i=0; i <deleted_page.size(); i++) {
+        int idx = deleted_page.size() -i -1;
+        insert_page(deleted_page[idx].get_x(), deleted_page[idx].get_y(), deleted_page[idx].get_width(), deleted_page[idx].get_height(), deleted_page[idx].get_id(), deleted_page[idx].get_content());
+    }
+    deleted_page = {};
 }
 
 void Board::only_show_state(vector<Page> vec) {
