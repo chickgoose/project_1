@@ -93,6 +93,7 @@ void Board::print_job(int job_idx, char job_type, int id) {
     output << id << endl;
 }
 
+
 void Board::insert_page(int x, int y, int width, int height, int id, int content) {
     Page new_page = Page(x, y, width, height, id, content);
     vec.push_back(new_page);
@@ -124,6 +125,7 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
 }
 
 void Board::delete_page(int id) {
+    
     delete_page_recursive_part(id);
     deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
     for (int i=0; i <deleted_page.size(); i++) {
@@ -163,12 +165,14 @@ void Board::only_show_state(vector<Page> vec) {
     for (int h = 0; h < height; h++) {
         for (int w = 0; w < width; w++) {
             board[h*width + w] = ' ';
+            board_page[h*width + w] = 0;
         }
     }
     for (int i=0; i<vec.size(); i++) {
         for (int h = vec[i].get_y(); h < vec[i].get_y() + vec[i].get_height(); h++) {
             for (int w = vec[i].get_x(); w < vec[i].get_x() + vec[i].get_width(); w++) {
                 board[h * this->width + w] = vec[i].get_content();
+                board_page[h * this->width + w] = vec[i].get_id();
             }
         }
     }
@@ -213,6 +217,7 @@ void Board::delete_page_recursive_part(int id) {
         if (check_existing_vec(vec[i].get_vec_top(), id) == 1) {
             for (int j=0; j<vec[i].get_vec_top().size(); j++) {
                 if (vec[i].get_vec_top()[j].get_id() == id) {
+
                     vec[i].delete_vec_top(j);
                 }
             }
