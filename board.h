@@ -103,13 +103,7 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
         for (int w = x; w < x + width; w++) {
             for (int i=0; i<idx; i++) {
                 if (board[h * this->width + w] == vec[i].get_content()) {
-                    for (int h_1 = vec[i].get_y(); h_1 < vec[i].get_y() + vec[i].get_height(); h_1++) {
-                        for (int w_1 = vec[i].get_x(); w_1 < vec[i].get_x() + vec[i].get_width(); w_1++) {
-                            if (h_1 * this->width + w_1 == h * this->width + w) {
-                                on[i] = true;
-                            }
-                        }
-                    }
+                    
                     on[i] = true;
                 }
             }
@@ -126,15 +120,22 @@ void Board::insert_page(int x, int y, int width, int height, int id, int content
 }
 
 void Board::delete_page(int id) {
+    
     delete_page_recursive_part(id);
+    deleted_page.erase(deleted_page.begin() + deleted_page.size() -1);
+    for (int i=0; i <deleted_page.size(); i++) {
+        int idx = deleted_page.size() -i -1;
+        insert_page(deleted_page[idx].get_x(), deleted_page[idx].get_y(), deleted_page[idx].get_width(), deleted_page[idx].get_height(), deleted_page[idx].get_id(), deleted_page[idx].get_content());
+    }
+    deleted_page = {};
 
 }
 
 void Board::modify_content(int id, char content) {
-
+   
 }
 void Board::modify_position(int id, int x, int y) {
-
+    
 }
 
 void Board::only_show_state(vector<Page> vec) {
@@ -171,10 +172,8 @@ void Board::delete_page_recursive_part(int id) {
             tidx = i;
         }
     }
-    //Page target = vec[tidx];
     int id_min;
     int id_min_idx;
-    //Page first_to_delete = target;
     while (vec[tidx].get_vec_top().size() > 0) {
         id_min = vec[tidx].get_vec_top()[0].get_id();
         id_min_idx = 0;
@@ -184,24 +183,15 @@ void Board::delete_page_recursive_part(int id) {
                 id_min_idx = i;
             }
         }
-        //first_to_delete = target.get_vec_top()[id_min_idx];
         delete_page_recursive_part(id_min);
     }
-    //삭제 부분
-    /*for (int i=0; i<vec_idx; i++) {
-        for (int j=0; j<vec[i].get_vec_top().size(); j++) {
-            if (vec[i].get_vec_top()[j].get_id() == id) {
-                //vec[i].get_vec_top().erase(vec[i].get_vec_top().begin()+j);
-            }
-        }
-    }*/
+
     deleted_page.push_back(vec[tidx]);
     vec.erase(vec.begin() + tidx);
     for (int i=0; i<vec.size(); i++){
         if (check_existing_vec(vec[i].get_vec_top(), id) == 1) {
             for (int j=0; j<vec[i].get_vec_top().size(); j++) {
                 if (vec[i].get_vec_top()[j].get_id() == id) {
-                    //vec[i].get_vec_top().erase(vec[i].get_vec_top().begin()+j);
                     vec[i].delete_vec_top(j);
                 }
             }
